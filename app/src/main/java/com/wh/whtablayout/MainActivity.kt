@@ -1,61 +1,74 @@
 package com.wh.whtablayout
 
 import android.os.Bundle
-import com.google.android.material.snackbar.Snackbar
+import android.util.TypedValue
+import android.view.Gravity
+import android.view.View
+import android.view.ViewGroup
+import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
-import androidx.navigation.findNavController
-import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.navigateUp
-import androidx.navigation.ui.setupActionBarWithNavController
-import android.view.Menu
-import android.view.MenuItem
+import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.RecyclerView.ViewHolder
+import androidx.viewpager2.adapter.FragmentStateAdapter
+import com.wh.lib.OnTabSelectedListener
+import com.wh.lib.SelectableTabsAdapter
 import com.wh.whtablayout.databinding.ActivityMainBinding
+import com.wh.whtablayout.databinding.ItemTabTextBinding
 
 class MainActivity : AppCompatActivity() {
-
-    private lateinit var appBarConfiguration: AppBarConfiguration
-    private lateinit var binding: ActivityMainBinding
+    private lateinit var mViewBinding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         WindowCompat.setDecorFitsSystemWindows(window, false)
         super.onCreate(savedInstanceState)
+        mViewBinding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(mViewBinding.root)
+        mViewBinding.whTabLayout.setAdapter(object : SelectableTabsAdapter<ViewHolder>() {
+            override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+                val itemTabTextBinding: ItemTabTextBinding =
+                    ItemTabTextBinding.inflate(layoutInflater)
+                return object : ViewHolder(itemTabTextBinding.root) {}
+            }
 
-        binding = ActivityMainBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+            override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+                super.onBindViewHolder(holder, position)
+                val tv: TextView = holder.itemView.findViewById(R.id.tv_text)
+                tv.text = position.toString()
+            }
 
-        setSupportActionBar(binding.toolbar)
+            override fun getItemCount(): Int {
+                return 5
+            }
+        })
+        mViewBinding.whTabLayout.mOnTabSelectedListener = object : OnTabSelectedListener {
+            override fun onReSelected(view: View, position: Int) {
+                Toast.makeText(view.context, "重新点击", Toast.LENGTH_LONG).show()
+            }
 
-        val navController = findNavController(R.id.nav_host_fragment_content_main)
-        appBarConfiguration = AppBarConfiguration(navController.graph)
-        setupActionBarWithNavController(navController, appBarConfiguration)
+            override fun onSelected(view: View, position: Int) {
+                val tv: TextView = view.findViewById(R.id.tv_text)
+                tv.setTextSize(TypedValue.COMPLEX_UNIT_SP, 22f)
+            }
 
-        binding.fab.setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                .setAnchorView(R.id.fab)
-                .setAction("Action", null).show()
+            override fun onUnSelected(view: View, position: Int) {
+                val tv: TextView = view.findViewById(R.id.tv_text)
+                tv.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f)
+            }
+
         }
-    }
 
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        menuInflater.inflate(R.menu.menu_main, menu)
-        return true
-    }
+        mViewBinding.vp2.adapter = object : FragmentStateAdapter(this){
+            override fun getItemCount(): Int {
+                return 5
+            }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        return when (item.itemId) {
-            R.id.action_settings -> true
-            else -> super.onOptionsItemSelected(item)
+            override fun createFragment(position: Int): Fragment {
+                return Fragment()
+            }
         }
-    }
 
-    override fun onSupportNavigateUp(): Boolean {
-        val navController = findNavController(R.id.nav_host_fragment_content_main)
-        return navController.navigateUp(appBarConfiguration)
-                || super.onSupportNavigateUp()
+        mViewBinding.whTabLayout.setupViewPager2(mViewBinding.vp2)
     }
 }
