@@ -13,7 +13,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:indicatorLayout="@layout/indicator"
+        app:whIndicatorLayout="@layout/indicator"
         app:whTabMode="fixed" />
 
     <androidx.viewpager2.widget.ViewPager2

@@ -33,7 +33,7 @@ class WhTabLayout : LinearLayout, OnTabSelectedListener, View.OnLayoutChangeList
     }
 
     private var mRecyclerView: RecyclerView? = null
-    private var mAdapter: SelectableTabsAdapter<ViewHolder>? = null
+    private var mAdapter: SelectableTabsAdapter<*>? = null
     private var mViewPager2: ViewPager2? = null
     var mOnTabSelectedListener: OnTabSelectedListener? = null
 
@@ -66,7 +66,7 @@ class WhTabLayout : LinearLayout, OnTabSelectedListener, View.OnLayoutChangeList
         try {
             array = context.obtainStyledAttributes(attrs, R.styleable.WhTabLayout)
             mIndicatorResId = array.getResourceId(
-                R.styleable.WhTabLayout_indicatorLayout,
+                R.styleable.WhTabLayout_whIndicatorLayout,
                 UNDEFINED_INDICATOR_RES_ID
             )
             mTabMode = array.getInt(R.styleable.WhTabLayout_whTabMode, TAB_MODE_FIXED)
@@ -135,7 +135,7 @@ class WhTabLayout : LinearLayout, OnTabSelectedListener, View.OnLayoutChangeList
     /**
      * 设置tab适配器
      */
-    fun setAdapter(adapter: SelectableTabsAdapter<ViewHolder>) {
+    fun setAdapter(adapter: SelectableTabsAdapter<*>) {
         mAdapter = adapter
         mAdapter?.mOnTabSelectedListener = this
         mRecyclerView?.let {
