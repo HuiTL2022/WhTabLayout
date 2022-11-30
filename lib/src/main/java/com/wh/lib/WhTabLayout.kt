@@ -3,7 +3,6 @@ package com.wh.lib
 import android.animation.ObjectAnimator
 import android.content.Context
 import android.content.res.TypedArray
-import android.graphics.Color
 import android.util.AttributeSet
 import android.view.View
 import android.widget.LinearLayout
@@ -16,7 +15,6 @@ import androidx.recyclerview.widget.RecyclerView.LayoutManager
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import androidx.viewpager2.widget.ViewPager2
 import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
-
 
 /**
  * @author: wh
@@ -77,7 +75,6 @@ class WhTabLayout : LinearLayout, OnTabSelectedListener, View.OnLayoutChangeList
         } finally {
             array?.recycle()
         }
-        setBackgroundColor(Color.BLACK)
     }
 
     override fun onFinishInflate() {

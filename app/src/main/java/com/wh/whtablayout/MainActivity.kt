@@ -1,8 +1,8 @@
 package com.wh.whtablayout
 
 import android.os.Bundle
+import android.os.Handler
 import android.util.TypedValue
-import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
@@ -19,29 +19,35 @@ import com.wh.whtablayout.databinding.ItemTabTextBinding
 
 class MainActivity : AppCompatActivity() {
     private lateinit var mViewBinding: ActivityMainBinding
+    private var mCount = 5
+    private var mAdapter = object : SelectableTabsAdapter<ViewHolder>() {
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+            val itemTabTextBinding: ItemTabTextBinding =
+                ItemTabTextBinding.inflate(layoutInflater)
+            return object : ViewHolder(itemTabTextBinding.root) {}
+        }
+
+        override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+            super.onBindViewHolder(holder, position)
+            val tv: TextView = holder.itemView.findViewById(R.id.tv_text)
+            tv.text = position.toString()
+        }
+
+        override fun getItemCount(): Int {
+            return mCount
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         WindowCompat.setDecorFitsSystemWindows(window, false)
         super.onCreate(savedInstanceState)
         mViewBinding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(mViewBinding.root)
-        mViewBinding.whTabLayout.setAdapter(object : SelectableTabsAdapter<ViewHolder>() {
-            override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-                val itemTabTextBinding: ItemTabTextBinding =
-                    ItemTabTextBinding.inflate(layoutInflater)
-                return object : ViewHolder(itemTabTextBinding.root) {}
-            }
-
-            override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-                super.onBindViewHolder(holder, position)
-                val tv: TextView = holder.itemView.findViewById(R.id.tv_text)
-                tv.text = position.toString()
-            }
-
-            override fun getItemCount(): Int {
-                return 5
-            }
-        })
+        mViewBinding.whTabLayout.setAdapter(mAdapter)
+        Handler().postDelayed({
+            mCount = 7
+            mViewBinding.whTabLayout.setAdapter(mAdapter)
+        }, 2000)
         mViewBinding.whTabLayout.mOnTabSelectedListener = object : OnTabSelectedListener {
             override fun onReSelected(view: View, position: Int) {
                 Toast.makeText(view.context, "重新点击", Toast.LENGTH_LONG).show()
@@ -56,10 +62,9 @@ class MainActivity : AppCompatActivity() {
                 val tv: TextView = view.findViewById(R.id.tv_text)
                 tv.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f)
             }
-
         }
 
-        mViewBinding.vp2.adapter = object : FragmentStateAdapter(this){
+        mViewBinding.vp2.adapter = object : FragmentStateAdapter(this) {
             override fun getItemCount(): Int {
                 return 5
             }
