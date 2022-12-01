@@ -32,9 +32,7 @@ abstract class SelectableTabsAdapter<VH : RecyclerView.ViewHolder> :
                     mLastSelectedPosition = mSelectedPosition
 
                     mSelectedPosition = position
-                    v?.isSelected = true
-                    it.onSelected(holder.itemView, mLastSelectedPosition, position)
-
+                    notifyItemChanged(mSelectedPosition)
                     notifyItemChanged(mLastSelectedPosition)
                 }
             }
