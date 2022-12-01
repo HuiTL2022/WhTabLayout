@@ -12,7 +12,6 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.LayoutManager
-import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import androidx.viewpager2.widget.ViewPager2
 import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
 
@@ -35,6 +34,7 @@ class WhTabLayout : LinearLayout, OnTabSelectedListener, View.OnLayoutChangeList
     private var mRecyclerView: RecyclerView? = null
     private var mAdapter: SelectableTabsAdapter<*>? = null
     private var mViewPager2: ViewPager2? = null
+    private var mObjectAnimator: ObjectAnimator? = null
     var mOnTabSelectedListener: OnTabSelectedListener? = null
 
     @TabMode
@@ -85,6 +85,7 @@ class WhTabLayout : LinearLayout, OnTabSelectedListener, View.OnLayoutChangeList
 
     private fun addTabUI() {
         mRecyclerView = RecyclerView(context)
+        mRecyclerView?.itemAnimator = null
         addView(mRecyclerView, generateRvLayoutParams())
     }
 
@@ -164,30 +165,53 @@ class WhTabLayout : LinearLayout, OnTabSelectedListener, View.OnLayoutChangeList
         mOnTabSelectedListener?.onReSelected(view, position)
     }
 
-    override fun onSelected(view: View, position: Int) {
+    override fun onSelected(view: View, lastPosition: Int, position: Int) {
         if (mViewPager2 != null) {
             mViewPager2!!.currentItem = position
         }
-        mOnTabSelectedListener?.onSelected(view, position)
+        mOnTabSelectedListener?.onSelected(view, lastPosition, position)
 
-        mIndicatorView?.clearAnimation()
         view.addOnLayoutChangeListener(this)
+        fixedNotDisplayRange(position)
     }
 
-    override fun onUnSelected(view: View, position: Int) {
-        mOnTabSelectedListener?.onUnSelected(view, position)
+    override fun onInitUI(view: View, position: Int) {
+        mOnTabSelectedListener?.onInitUI(view, position)
         view.removeOnLayoutChangeListener(this)
     }
 
+    private fun fixedNotDisplayRange(position: Int) {
+        mRecyclerView?.let {
+            if (it.layoutManager is LinearLayoutManager) {
+                val linearLayoutManager: LinearLayoutManager =
+                    it.layoutManager as LinearLayoutManager
+                val first = linearLayoutManager.findFirstCompletelyVisibleItemPosition()
+                val last = linearLayoutManager.findFirstCompletelyVisibleItemPosition()
+                if (position !in first..last) {
+                    linearLayoutManager.scrollToPosition(position)
+                }
+            }
+        }
+    }
+
     private fun startTranslation(view: View?, propertyName: String, start: Float?, end: Float?) {
-        if (null == view || null == start || null == end || start == end) {
+        if (null == view || null == start || null == end) {
             return
         }
-        view.clearAnimation()
+        clearAnimator()
 
-        val animation = ObjectAnimator.ofFloat(view, propertyName, start, end)
-        animation.duration = 100
-        animation.start()
+        mObjectAnimator = ObjectAnimator.ofFloat(view, propertyName, start, end)
+        mObjectAnimator?.let {
+            it.duration = 100
+            it.start()
+        }
+    }
+
+    private fun clearAnimator() {
+        mObjectAnimator?.let {
+            if (it.isRunning)
+                it.cancel()
+        }
     }
 
     override fun onLayoutChange(
@@ -204,12 +228,11 @@ class WhTabLayout : LinearLayout, OnTabSelectedListener, View.OnLayoutChangeList
         v?.let {
             if (VERTICAL == orientation) {
                 mIndicatorView?.layoutParams?.width = v.width
-                startTranslation(mIndicatorView, "translationX", mIndicatorView?.x, v.x)
+                startTranslation(mIndicatorView, "x", mIndicatorView?.x, v.x)
             } else {
                 mIndicatorView?.layoutParams?.height = v.height
-                startTranslation(mIndicatorView, "translationY", mIndicatorView?.y, v.y)
+                startTranslation(mIndicatorView, "y", mIndicatorView?.y, v.y)
             }
-
         }
     }
 }

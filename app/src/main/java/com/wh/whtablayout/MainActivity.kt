@@ -19,7 +19,7 @@ import com.wh.whtablayout.databinding.ItemTabTextBinding
 
 class MainActivity : AppCompatActivity() {
     private lateinit var mViewBinding: ActivityMainBinding
-    private var mCount = 5
+    private var mCount = 50
     private var mAdapter = object : SelectableTabsAdapter<ViewHolder>() {
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
             val itemTabTextBinding: ItemTabTextBinding =
@@ -44,21 +44,18 @@ class MainActivity : AppCompatActivity() {
         mViewBinding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(mViewBinding.root)
         mViewBinding.whTabLayout.setAdapter(mAdapter)
-        Handler().postDelayed({
-            mCount = 7
-            mViewBinding.whTabLayout.setAdapter(mAdapter)
-        }, 2000)
+
         mViewBinding.whTabLayout.mOnTabSelectedListener = object : OnTabSelectedListener {
             override fun onReSelected(view: View, position: Int) {
                 Toast.makeText(view.context, "重新点击", Toast.LENGTH_LONG).show()
             }
 
-            override fun onSelected(view: View, position: Int) {
+            override fun onSelected(view: View, lastPosition: Int, position: Int) {
                 val tv: TextView = view.findViewById(R.id.tv_text)
                 tv.setTextSize(TypedValue.COMPLEX_UNIT_SP, 22f)
             }
 
-            override fun onUnSelected(view: View, position: Int) {
+            override fun onInitUI(view: View, position: Int) {
                 val tv: TextView = view.findViewById(R.id.tv_text)
                 tv.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16f)
             }
@@ -66,7 +63,7 @@ class MainActivity : AppCompatActivity() {
 
         mViewBinding.vp2.adapter = object : FragmentStateAdapter(this) {
             override fun getItemCount(): Int {
-                return 5
+                return 50
             }
 
             override fun createFragment(position: Int): Fragment {

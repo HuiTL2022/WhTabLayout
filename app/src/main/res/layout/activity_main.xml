@@ -10,11 +10,11 @@
 
     <com.wh.lib.WhTabLayout
         android:id="@+id/wh_tab_layout"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         app:whIndicatorLayout="@layout/indicator"
-        app:whTabMode="fixed" />
+        app:whTabMode="auto" />
 
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/vp2"

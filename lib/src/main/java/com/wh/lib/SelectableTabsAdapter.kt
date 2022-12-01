@@ -18,14 +18,11 @@ abstract class SelectableTabsAdapter<VH : RecyclerView.ViewHolder> :
     override fun onBindViewHolder(holder: VH, @SuppressLint("RecyclerView") position: Int) {
         if (position == mSelectedPosition) {
             holder.itemView.isSelected = true
-            mOnTabSelectedListener?.onSelected(holder.itemView, position)
+            mOnTabSelectedListener?.onSelected(holder.itemView, mLastSelectedPosition, position)
         } else {
             holder.itemView.isSelected = false
-            if (position == mLastSelectedPosition) {
-                mOnTabSelectedListener?.onUnSelected(holder.itemView, position)
-            }
+            mOnTabSelectedListener?.onInitUI(holder.itemView, position)
         }
-        holder.itemView.tag = position
         holder.itemView.setOnClickListener { v: View? ->
             mOnTabSelectedListener?.let {
                 if (mSelectedPosition == position) {
@@ -36,7 +33,7 @@ abstract class SelectableTabsAdapter<VH : RecyclerView.ViewHolder> :
 
                     mSelectedPosition = position
                     v?.isSelected = true
-                    it.onSelected(holder.itemView, position)
+                    it.onSelected(holder.itemView, mLastSelectedPosition, position)
 
                     notifyItemChanged(mLastSelectedPosition)
                 }

@@ -9,6 +9,6 @@ import android.view.View
  */
 interface OnTabSelectedListener {
     fun onReSelected(view: View, position: Int)
-    fun onSelected(view: View, position: Int)
-    fun onUnSelected(view: View, position: Int)
+    fun onSelected(view: View, lastPosition: Int, position: Int)
+    fun onInitUI(view: View, position: Int)
 }
